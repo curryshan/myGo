@@ -7,6 +7,7 @@ func main() {
 
 	defer func() {
         fmt.Println("c")
+        //  分号表示&&
         if err := recover(); err != nil {
             fmt.Println(err)
         }
