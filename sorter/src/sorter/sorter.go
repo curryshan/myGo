@@ -1,9 +1,16 @@
 package main
 
-import "flag"
+import (
+    "flag"
+    "io"
+    "strconv"
+)
 import "fmt"
 import "os"
 import "bufio"
+import "time"
+import "algorithms/bubblesort"
+import "algorithms/qsort"
 
 var infile *string = flag.String("i", "unsorted.dat", "File contains values for sorting")
 var outfile *string = flag.String("o", "sorted.dat", "File to receive sorted values")
@@ -21,7 +28,7 @@ func readValues (infile string) (value []int, err error){
 
     br := bufio.NewReader(file)
 
-    values = make([]int, 0)
+    values := make([]int, 0)
 
     for {
         line, isPrefix, err1 := br.ReadLine()
@@ -41,15 +48,16 @@ func readValues (infile string) (value []int, err error){
         //  转化字符数组为字符串
         str := string(line)
 
-        value, err1 := strconv.Atoi(str)
+        value, _ := strconv.Atoi(str)
 
-        if err1 != nil {
-            err = err1
-            return
-        }
+        //if err1 != nil {
+        //    err = err1
+        //    return
+        //}
 
         values = append(values, value)
     }
+    return
 }
 
 func writeValues(values []int, outfile string) error {
@@ -80,7 +88,20 @@ func main() {
     values, err := readValues(*infile)
 
     if err == nil {
-        fmt.Println("Read values:", values)
+        t1 := time.Now()
+        switch *algorithm {
+            case "qsort":
+                qsort.QuickSort(values)
+            case "bubblesort":
+                bubblesort.BubbleSort(values)
+            default:
+                fmt.Println("sorting algorithm", *algorithm, "is unknown")
+        }
+        t2 := time.Now()
+
+        fmt.Println("the sorting process costs", t2.Sub(t1), "to complete.")
+
+        writeValues(values, *outfile)
     } else {
         fmt.Println(err)
     }
